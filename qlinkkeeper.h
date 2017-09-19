@@ -3,7 +3,7 @@
 
 #include <QDialog>
 #include <QHostAddress>
-#include "ipaddress.h"
+#include "qipedit.h"
 
 namespace Ui {
 class QLinkKeeper;
@@ -19,7 +19,7 @@ public:
 
 private:
     Ui::QLinkKeeper *ui;
-    ipAddress *w_IPAddr;
+    QIPEdit *w_IPAddr;
 };
 
 #endif // QLINKKEEPER_H

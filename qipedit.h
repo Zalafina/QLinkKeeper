@@ -1,5 +1,5 @@
-#ifndef IPADDRESS_H
-#define IPADDRESS_H
+#ifndef QIPEDIT_H
+#define QIPEDIT_H
 
 #include <QWidget>
 #include <QLabel>
@@ -8,12 +8,12 @@
 #include <QHostAddress>
 #include <QIntValidator>
 
-class ipAddress : public QWidget
+class QIPEdit : public QWidget
 {
     Q_OBJECT
 public:
-    explicit ipAddress(QWidget *parent = 0);
-    ~ipAddress();
+    explicit QIPEdit(QWidget *parent = 0);
+    ~QIPEdit();
 
     bool validate(void);
     bool subCheck(QLineEdit*);
@@ -28,10 +28,10 @@ public slots:
 
 public:
 
-    QLabel *labeladdr;
-    QLabel *label1;
-    QLabel *label2;
-    QLabel *label3;
+    QLabel *labelip;
+    QLabel *labelpoint1;
+    QLabel *labelpoint2;
+    QLabel *labelpoint3;
 
     QHBoxLayout *mainLayout;
 
@@ -43,4 +43,4 @@ public:
     QIntValidator *validator;
 };
 
-#endif // IPADDRESS_H
+#endif // QIPEDIT_H

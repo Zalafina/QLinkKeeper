@@ -34,10 +34,10 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 
 SOURCES += main.cpp\
-        qlinkkeeper.cpp \
-    ipaddress.cpp
+    qlinkkeeper.cpp \
+    qipedit.cpp
 
 HEADERS  += qlinkkeeper.h \
-    ipaddress.h
+    qipedit.h
 
 FORMS    += qlinkkeeper.ui

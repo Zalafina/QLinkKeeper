@@ -1,15 +1,15 @@
-#include "ipaddress.h"
+#include "qipedit.h"
 
-ipAddress::ipAddress(QWidget *parent) :
+QIPEdit::QIPEdit(QWidget *parent) :
     QWidget(parent),
     validator(new QIntValidator(0,255))
 {
     // Set Layout
     mainLayout=new QHBoxLayout(this);
-    labeladdr=new QLabel("IP",this);
-    label1=new QLabel(".",this);
-    label2=new QLabel(".",this);
-    label3=new QLabel(".",this);
+    labelip=new QLabel("IP",this);
+    labelpoint1=new QLabel(".",this);
+    labelpoint2=new QLabel(".",this);
+    labelpoint3=new QLabel(".",this);
 
     number1=new QLineEdit(this);
     number2=new QLineEdit(this);
@@ -33,19 +33,19 @@ ipAddress::ipAddress(QWidget *parent) :
     number3->setAttribute(Qt::WA_InputMethodEnabled, false);
     number4->setAttribute(Qt::WA_InputMethodEnabled, false);
 
-    mainLayout->addWidget(labeladdr);
+    mainLayout->addWidget(labelip);
     mainLayout->addWidget(number1);
-    mainLayout->addWidget(label1);
+    mainLayout->addWidget(labelpoint1);
     mainLayout->addWidget(number2);
-    mainLayout->addWidget(label2);
+    mainLayout->addWidget(labelpoint2);
     mainLayout->addWidget(number3);
-    mainLayout->addWidget(label3);
+    mainLayout->addWidget(labelpoint3);
     mainLayout->addWidget(number4);
 
     parent->setLayout(mainLayout);
 }
 
-ipAddress::~ipAddress()
+QIPEdit::~QIPEdit()
 {
     if(validator != NULL){
         delete validator;
@@ -56,13 +56,13 @@ ipAddress::~ipAddress()
     }
 }
 
-bool ipAddress::validate(void)
+bool QIPEdit::validate(void)
 {
     // Validate of the IP Address
     return subCheck(number1) && subCheck(number2) && subCheck(number3) && subCheck(number4);
 }
 
-bool ipAddress::subCheck(QLineEdit *number)
+bool QIPEdit::subCheck(QLineEdit *number)
 {
     QString str = number->displayText();
     bool checkresult = true;
@@ -77,7 +77,7 @@ bool ipAddress::subCheck(QLineEdit *number)
     return checkresult;
 }
 
-QString ipAddress::getIPAddressString(void)
+QString QIPEdit::getIPAddressString(void)
 {
     QString str;
 
@@ -94,14 +94,14 @@ QString ipAddress::getIPAddressString(void)
     return str;
 }
 
-QHostAddress ipAddress::getQHostAddress(void)
+QHostAddress QIPEdit::getQHostAddress(void)
 {
     QHostAddress hostAddr(getIPAddressString());
 
     return hostAddr;
 }
 
-void ipAddress::textClear(void)
+void QIPEdit::textClear(void)
 {
     number1->clear();
     number2->clear();
@@ -109,7 +109,7 @@ void ipAddress::textClear(void)
     number4->clear();
 }
 
-QHBoxLayout *ipAddress::getHLayout(void)
+QHBoxLayout *QIPEdit::getHLayout(void)
 {
     return mainLayout;
 }

@@ -1,10 +1,13 @@
 #include "qlinkkeeper.h"
 #include <QApplication>
+#include <QStyleFactory>
 #include <QDateTime>
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
+    QApplication::setStyle(QStyleFactory::create("Fusion"));
+    qDebug() << QStyleFactory::keys();
     QLinkKeeper w;
 
     // Remove "?" Button from QDialog
