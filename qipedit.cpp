@@ -101,6 +101,13 @@ QHostAddress QIPEdit::getQHostAddress(void)
     return hostAddr;
 }
 
+bool QIPEdit::setIPAddressFromString(QString &IPString)
+{
+    bool result = false;
+
+    return result;
+}
+
 void QIPEdit::textClear(void)
 {
     number1->clear();

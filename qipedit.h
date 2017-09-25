@@ -19,6 +19,7 @@ public:
     bool subCheck(QLineEdit*);
     QString getIPAddressString(void);
     QHostAddress getQHostAddress(void);
+    bool setIPAddressFromString(QString &IPString);
     void textClear(void);
     QHBoxLayout *getHLayout(void);
 

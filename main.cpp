@@ -7,7 +7,7 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
     QApplication::setStyle(QStyleFactory::create("Fusion"));
-    qDebug() << QStyleFactory::keys();
+    //qDebug() << QStyleFactory::keys();
     QLinkKeeper w;
 
     // Remove "?" Button from QDialog

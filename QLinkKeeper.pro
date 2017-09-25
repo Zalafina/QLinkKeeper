@@ -33,7 +33,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 
-SOURCES += main.cpp\
+SOURCES  += main.cpp\
     qlinkkeeper.cpp \
     qipedit.cpp
 
@@ -41,3 +41,7 @@ HEADERS  += qlinkkeeper.h \
     qipedit.h
 
 FORMS    += qlinkkeeper.ui
+
+RC_FILE     += QLinkKeeper.rc
+
+DISTFILES   += QLinkKeeper.rc
