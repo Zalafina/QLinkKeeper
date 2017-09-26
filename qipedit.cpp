@@ -2,7 +2,7 @@
 
 QIPEdit::QIPEdit(QWidget *parent) :
     QWidget(parent),
-    validator(new QIntValidator(0,255))
+    validator(new QIntValidator(1,254))
 {
     // Set Layout
     mainLayout=new QHBoxLayout(this);
@@ -32,6 +32,12 @@ QIPEdit::QIPEdit(QWidget *parent) :
     number2->setAttribute(Qt::WA_InputMethodEnabled, false);
     number3->setAttribute(Qt::WA_InputMethodEnabled, false);
     number4->setAttribute(Qt::WA_InputMethodEnabled, false);
+
+    Qt::Alignment alignment = Qt::AlignHCenter|Qt::AlignVCenter;
+    number1->setAlignment(alignment);
+    number2->setAlignment(alignment);
+    number3->setAlignment(alignment);
+    number4->setAlignment(alignment);
 
     mainLayout->addWidget(labelip);
     mainLayout->addWidget(number1);
@@ -103,9 +109,60 @@ QHostAddress QIPEdit::getQHostAddress(void)
 
 bool QIPEdit::setIPAddressFromString(QString &IPString)
 {
-    bool result = false;
+    bool setResult = false;
+    if (true == validateIPAddrString(IPString)){
+        QString str1 = IPString.section('.', 0, 0);
+        QString str2 = IPString.section('.', 1, 1);
+        QString str3 = IPString.section('.', 2, 2);
+        QString str4 = IPString.section('.', 3, 3);
 
-    return result;
+        number1->setText(str1);
+        number2->setText(str2);
+        number3->setText(str3);
+        number4->setText(str4);
+
+        setResult = true;
+    }
+
+    return setResult;
+}
+
+bool QIPEdit::validateIPAddrString(QString &IPString)
+{
+    bool validateResult = false;
+    int pointCount = 0;
+    bool result1 = false;
+    bool result2 = false;
+    bool result3 = false;
+    bool result4 = false;
+    int num1 = 0;
+    int num2 = 0;
+    int num3 = 0;
+    int num4 = 0;
+
+    pointCount = IPString.count(QChar('.'));
+    if (3 == pointCount){
+        QString str1 = IPString.section('.', 0, 0);
+        QString str2 = IPString.section('.', 1, 1);
+        QString str3 = IPString.section('.', 2, 2);
+        QString str4 = IPString.section('.', 3, 3);
+
+        num1 = str1.toInt(&result1);
+        num2 = str2.toInt(&result2);
+        num3 = str3.toInt(&result3);
+        num4 = str4.toInt(&result4);
+
+        if (true == result1 && true == result2 && true == result3 && true == result4){
+            if ((1 <= num1 && num1 <= 254)
+                && (1 <= num2 && num2 <= 254)
+                && (1 <= num3 && num3 <= 254)
+                && (1 <= num4 && num4 <= 254)){
+                validateResult = true;
+            }
+        }
+    }
+
+    return validateResult;
 }
 
 void QIPEdit::textClear(void)

@@ -20,6 +20,7 @@ public:
     QString getIPAddressString(void);
     QHostAddress getQHostAddress(void);
     bool setIPAddressFromString(QString &IPString);
+    static bool validateIPAddrString(QString &IPString);
     void textClear(void);
     QHBoxLayout *getHLayout(void);
 

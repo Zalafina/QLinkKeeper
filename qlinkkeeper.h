@@ -4,6 +4,8 @@
 #include <QDialog>
 #include <QMetaEnum>
 #include <QHostAddress>
+#include <QMessageBox>
+#include <QSettings>
 #include "qipedit.h"
 
 namespace Ui {
@@ -29,7 +31,11 @@ public:
 private slots:
     void on_startButton_clicked();
 
-    void on_saveipButton_clicked();
+    void on_clearCountButton_clicked();
+
+private:
+    void saveIPAddr(void);
+    void loadIPAddr(void);
 
 private:
     Ui::QLinkKeeper *ui;

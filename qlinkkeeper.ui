@@ -155,7 +155,7 @@
     <bool>true</bool>
    </property>
   </widget>
-  <widget class="QPushButton" name="saveipButton">
+  <widget class="QPushButton" name="clearCountButton">
    <property name="geometry">
     <rect>
      <x>150</x>
@@ -172,7 +172,7 @@
     </font>
    </property>
    <property name="text">
-    <string>SaveIP</string>
+    <string>ClearCount</string>
    </property>
    <property name="autoDefault">
     <bool>false</bool>
