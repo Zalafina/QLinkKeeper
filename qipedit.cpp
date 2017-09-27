@@ -1,7 +1,7 @@
 #include "qipedit.h"
 
-static int IP_NUM_MIN = 0;
-static int IP_NUM_MAX = 255;
+static const int IP_NUM_MIN = 0;
+static const int IP_NUM_MAX = 255;
 
 QIPEdit::QIPEdit(QWidget *parent) :
     QWidget(parent),
