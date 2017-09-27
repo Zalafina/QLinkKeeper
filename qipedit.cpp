@@ -1,8 +1,11 @@
 #include "qipedit.h"
 
+static int IP_NUM_MIN = 0;
+static int IP_NUM_MAX = 255;
+
 QIPEdit::QIPEdit(QWidget *parent) :
     QWidget(parent),
-    validator(new QIntValidator(1,254))
+    validator(new QIntValidator(IP_NUM_MIN,IP_NUM_MAX))
 {
     // Set Layout
     mainLayout=new QHBoxLayout(this);
@@ -161,10 +164,10 @@ bool QIPEdit::validateIPAddrString(QString &IPString)
         num4 = str4.toInt(&result4);
 
         if (true == result1 && true == result2 && true == result3 && true == result4){
-            if ((1 <= num1 && num1 <= 254)
-                && (1 <= num2 && num2 <= 254)
-                && (1 <= num3 && num3 <= 254)
-                && (1 <= num4 && num4 <= 254)){
+            if ((IP_NUM_MIN <= num1 && num1 <= IP_NUM_MAX)
+                && (IP_NUM_MIN <= num2 && num2 <= IP_NUM_MAX)
+                && (IP_NUM_MIN <= num3 && num3 <= IP_NUM_MAX)
+                && (IP_NUM_MIN <= num4 && num4 <= IP_NUM_MAX)){
                 validateResult = true;
             }
         }

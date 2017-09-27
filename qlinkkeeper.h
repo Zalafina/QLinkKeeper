@@ -35,8 +35,8 @@ public:
 private slots:
     void on_linkButton_clicked();
 
-public slots:
     void linkCycleTimeOut(void);
+    void readPingOutputData(int exitCode, QProcess::ExitStatus exitStatus);
 
 private:
     void saveIPAddr(void);
@@ -51,6 +51,7 @@ private:
     quint8 m_LinkKeepStatus;
     bool m_LinkKeeping;
     QTimer m_LinkTimer;
+    QProcess *m_PingProcess;
 };
 
 #endif // QLINKKEEPER_H

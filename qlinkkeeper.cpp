@@ -7,13 +7,16 @@ static const QString FAILURE_ACTIVE(QString("<html><head/><body><p><span style=\
 static const QString SUCCESS_INACTIVE(QString("<html><head/><body><p><span style=\" color:#737373;\">Success</span></p></body></html>"));
 static const QString FAILURE_INACTIVE(QString("<html><head/><body><p><span style=\" color:#737373;\">Failure</span></p></body></html>"));
 
+static const uint PING_CMD_TIMEOUT = 10000U;
+
 QLinkKeeper::QLinkKeeper(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::QLinkKeeper),
     w_IPAddr(new QIPEdit(this)),
     m_LinkKeepStatus(LINK_IDLE),
     m_LinkKeeping(false),
-    m_LinkTimer(this)
+    m_LinkTimer(this),
+    m_PingProcess(NULL)
 {
     ui->setupUi(this);
 
@@ -24,11 +27,23 @@ QLinkKeeper::QLinkKeeper(QWidget *parent) :
     loadLinkCycleTime();
 
     QObject::connect(&m_LinkTimer, SIGNAL(timeout()), this, SLOT(linkCycleTimeOut()));
+
+    m_PingProcess = new QProcess();
+    m_PingProcess->setProcessChannelMode(QProcess::MergedChannels);
+    //static_cast<void>(QObject::connect(m_PingProcess,SIGNAL(readyReadStandardOutput()),this,SLOT(receivePingStandOutputData())));
+    static_cast<void>(QObject::connect(m_PingProcess,SIGNAL(finished(int, QProcess::ExitStatus)),this,SLOT(readPingOutputData(int, QProcess::ExitStatus))));
 }
 
 QLinkKeeper::~QLinkKeeper()
 {
     delete ui;
+
+    delete w_IPAddr;
+    w_IPAddr = NULL;
+
+    m_PingProcess->terminate();
+    delete m_PingProcess;
+    m_PingProcess = NULL;
 }
 
 void QLinkKeeper::on_linkButton_clicked()
@@ -45,7 +60,9 @@ void QLinkKeeper::on_linkButton_clicked()
             saveIPAddr();
             saveLinkCycleTime();
             ui->linkButton->setText("Stop");
+            m_LinkTimer.stop();
             m_LinkTimer.start(ui->cycleTimeSpinBox->value()*1000);
+            //linkCycleTimeOut();
 
             m_LinkKeeping = true;
         }
@@ -54,6 +71,7 @@ void QLinkKeeper::on_linkButton_clicked()
         }
     }
     else{
+        m_PingProcess->terminate();
         w_IPAddr->setReadOnly(false);
         ui->cycleTimeSpinBox->setReadOnly(false);
         ui->labelSuccess->setText(SUCCESS_INACTIVE);
@@ -80,26 +98,48 @@ void QLinkKeeper::on_linkButton_clicked()
 void QLinkKeeper::linkCycleTimeOut(void)
 {
     QHostAddress ipaddr = w_IPAddr->getQHostAddress();
-    QProcess *cmd = new QProcess;
-    QString strArg = "ping " + ipaddr.toString() + " -n 1 -w " + QString::number(8000);
+    QString ping_cmd = "ping " + ipaddr.toString() + " -n 1 -w " + QString::number(PING_CMD_TIMEOUT);
 
-    cmd->start(strArg);
-    cmd->waitForReadyRead();
-    cmd->waitForFinished();
-    QString retStr = cmd->readAll();
+    QProcess::ProcessState process_state = m_PingProcess->state();
 
-//#ifdef DEBUG_LOGOUT_ON
-//    qDebug() <<"Ping response: " << retStr;
-//#endif
+    if (process_state == QProcess::NotRunning){
+        m_PingProcess->start(ping_cmd, QIODevice::ReadOnly);
+    }
+    else{
+        // do nothing.
+    }
+}
 
-    if (true == retStr.contains( QString("TTL=") ))
+void QLinkKeeper::readPingOutputData(int exitCode, QProcess::ExitStatus exitStatus)
+{
+    Q_UNUSED(exitCode);
+    Q_UNUSED(exitStatus);
+
+    bool pingresult = false;
+    QString ipaddr_str = w_IPAddr->getIPAddressString();
+
+    while (!m_PingProcess->atEnd()) {
+        QByteArray data = m_PingProcess->readAllStandardOutput();
+        QString utf8_str = QString::fromUtf8(data);
+        qDebug() << "Ping Output: " << utf8_str;
+
+        if (true == data.contains("TTL="))
+        {
+            pingresult = true;
+        }
+        else{
+            // do nothing.
+        }
+    }
+
+    if (true == pingresult)
     {
         ui->labelSuccess->setText(SUCCESS_ACTIVE);
         int successCount = ui->SuccessCounter->intValue();
         ui->SuccessCounter->display(successCount+1);
 
 #ifdef DEBUG_LOGOUT_ON
-        qDebug("Server %s connect Success(%d)", ipaddr.toString().toLatin1().constData(), ui->SuccessCounter->intValue());
+        qDebug("Server %s connect Success(%d)", ipaddr_str.toLatin1().constData(), ui->SuccessCounter->intValue());
 #endif
     }
     else{
@@ -108,10 +148,9 @@ void QLinkKeeper::linkCycleTimeOut(void)
         ui->FailureCounter->display(failureCount+1);
 
 #ifdef DEBUG_LOGOUT_ON
-        qDebug("Server %s connect Failure(%d)", ipaddr.toString().toLatin1().constData(), ui->FailureCounter->intValue());
+        qDebug("Server %s connect Failure(%d)", ipaddr_str.toLatin1().constData(), ui->FailureCounter->intValue());
 #endif
     }
-    retStr.clear();
 }
 
 void QLinkKeeper::saveIPAddr(void)

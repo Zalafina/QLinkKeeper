@@ -13,6 +13,7 @@ int main(int argc, char *argv[])
     // Remove "?" Button from QDialog
     Qt::WindowFlags flags = Qt::Dialog;
     flags |= Qt::WindowCloseButtonHint;
+    flags |= Qt::WindowMinimizeButtonHint;
     w.setWindowFlags(flags);
 
     //qDebug("QDateTime::currentDateTime().toTime_t() is %lld", QDateTime::currentDateTime().toMSecsSinceEpoch());
