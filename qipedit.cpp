@@ -21,6 +21,10 @@ QIPEdit::QIPEdit(QWidget *parent) :
     number3->setMaxLength(3);
     number4->setMaxLength(3);
 
+    labelpoint1->setMaximumWidth(4);
+    labelpoint2->setMaximumWidth(4);
+    labelpoint3->setMaximumWidth(4);
+
     // QRegExp ip_number("[0-9]*");
     // number1->setValidator(new QRegExpValidator(ip_number, number1));
     number1->setValidator(validator);
@@ -38,6 +42,10 @@ QIPEdit::QIPEdit(QWidget *parent) :
     number2->setAlignment(alignment);
     number3->setAlignment(alignment);
     number4->setAlignment(alignment);
+
+    labelpoint1->setAlignment(alignment);
+    labelpoint2->setAlignment(alignment);
+    labelpoint3->setAlignment(alignment);
 
     mainLayout->addWidget(labelip);
     mainLayout->addWidget(number1);
@@ -171,6 +179,14 @@ void QIPEdit::textClear(void)
     number2->clear();
     number3->clear();
     number4->clear();
+}
+
+void QIPEdit::setReadOnly(bool r)
+{
+    number1->setReadOnly(r);
+    number2->setReadOnly(r);
+    number3->setReadOnly(r);
+    number4->setReadOnly(r);
 }
 
 QHBoxLayout *QIPEdit::getHLayout(void)

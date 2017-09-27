@@ -2,10 +2,14 @@
 #define QLINKKEEPER_H
 
 #include <QDialog>
+#include <QToolButton>
 #include <QMetaEnum>
+#include <QTimer>
 #include <QHostAddress>
 #include <QMessageBox>
 #include <QSettings>
+#include <QTcpSocket>
+#include <QProcess>
 #include "qipedit.h"
 
 namespace Ui {
@@ -29,17 +33,24 @@ public:
     Q_ENUM(LinkKeepStatus)
 
 private slots:
-    void on_startButton_clicked();
+    void on_linkButton_clicked();
 
-    void on_clearCountButton_clicked();
+public slots:
+    void linkCycleTimeOut(void);
 
 private:
     void saveIPAddr(void);
     void loadIPAddr(void);
 
+    void saveLinkCycleTime(void);
+    void loadLinkCycleTime(void);
+
 private:
     Ui::QLinkKeeper *ui;
     QIPEdit *w_IPAddr;
+    quint8 m_LinkKeepStatus;
+    bool m_LinkKeeping;
+    QTimer m_LinkTimer;
 };
 
 #endif // QLINKKEEPER_H

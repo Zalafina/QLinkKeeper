@@ -22,6 +22,7 @@ public:
     bool setIPAddressFromString(QString &IPString);
     static bool validateIPAddrString(QString &IPString);
     void textClear(void);
+    void setReadOnly(bool r);
     QHBoxLayout *getHLayout(void);
 
 signals:
