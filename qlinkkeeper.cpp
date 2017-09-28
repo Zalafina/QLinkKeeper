@@ -148,9 +148,13 @@ void QLinkKeeper::readPingOutputData(int exitCode, QProcess::ExitStatus exitStat
         QString codecResult = pingCodeC->toUnicode(data);
         QStringList pingoutput = codecResult.split("\r\n");
 
-        QTextStream cout(stdout, QIODevice::WriteOnly);
+//        QTextStream cout(stdout, QIODevice::WriteOnly);
+//        for(qint32 loopCnt = 0; loopCnt < pingoutput.size(); loopCnt++){
+//            cout << pingoutput.at(loopCnt) << endl; cout.flush();
+//        }
+
         for(qint32 loopCnt = 0; loopCnt < pingoutput.size(); loopCnt++){
-            cout << pingoutput.at(loopCnt) << endl; cout.flush();
+            qDebug().noquote() << pingoutput.at(loopCnt);
         }
 #endif
 
