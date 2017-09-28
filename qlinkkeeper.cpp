@@ -1,3 +1,4 @@
+#include <QTextStream>
 #include "qlinkkeeper.h"
 #include "ui_qlinkkeeper.h"
 
@@ -36,7 +37,7 @@ QLinkKeeper::QLinkKeeper(QWidget *parent) :
 
     m_SysTrayIcon = new QSystemTrayIcon(this);
     m_SysTrayIcon->setIcon(QIcon(":/AppIcon.ico"));
-    m_SysTrayIcon->setToolTip("QLinkKeeper");
+    m_SysTrayIcon->setToolTip("QLinkKeeper(idle)");
     m_SysTrayIcon->show();
 
     QObject::connect(m_SysTrayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this, SLOT(SystrayIconActivated(QSystemTrayIcon::ActivationReason)));
@@ -110,19 +111,9 @@ void QLinkKeeper::on_linkButton_clicked()
 
         m_LinkTimer.stop();
         m_LinkKeepStatus = LINK_IDLE;
+        m_SysTrayIcon->setToolTip("QLinkKeeper(Idle)");
         m_LinkKeeping = false;
     }
-
-    //    QMetaEnum my_enum = QMetaEnum::fromType<LinkKeepStatus>();
-    //    qDebug("QLinkKeeper::LINK_SUCCESS(%s)", my_enum.valueToKey(QLinkKeeper::LINK_SUCCESS));
-    //    for (int loop=0; loop<my_enum.keyCount(); ++loop)
-    //    {
-    //        qDebug("%s=%d", my_enum.key(loop), my_enum.value(loop));
-    //    }
-
-    //    QHostAddress ipaddr("192.168.210.56");
-    //    quint32 addr_value = ipaddr.toIPv4Address();
-    //    qDebug("ipaddr.toIPv4Address() = %u", addr_value);
 }
 
 void QLinkKeeper::linkCycleTimeOut(void)
@@ -150,8 +141,18 @@ void QLinkKeeper::readPingOutputData(int exitCode, QProcess::ExitStatus exitStat
 
     while (!m_PingProcess->atEnd()) {
         QByteArray data = m_PingProcess->readAllStandardOutput();
-        QString utf8_str = QString::fromUtf8(data);
-        qDebug() << "Ping Output: " << utf8_str;
+
+#ifdef DEBUG_LOGOUT_ON
+        //QTextCodec *pingCodeC = QTextCodec::codecForName("GB2312");
+        QTextCodec *pingCodeC = QTextCodec::codecForLocale();
+        QString codecResult = pingCodeC->toUnicode(data);
+        QStringList pingoutput = codecResult.split("\r\n");
+
+        QTextStream cout(stdout, QIODevice::WriteOnly);
+        for(qint32 loopCnt = 0; loopCnt < pingoutput.size(); loopCnt++){
+            cout << pingoutput.at(loopCnt) << endl; cout.flush();
+        }
+#endif
 
         if (true == data.contains("TTL="))
         {
@@ -168,6 +169,9 @@ void QLinkKeeper::readPingOutputData(int exitCode, QProcess::ExitStatus exitStat
         int successCount = ui->SuccessCounter->intValue();
         ui->SuccessCounter->display(successCount+1);
 
+        m_LinkKeepStatus = LINK_SUCCESS;
+        m_SysTrayIcon->setToolTip("QLinkKeeper(Success)");
+
 #ifdef DEBUG_LOGOUT_ON
         qDebug("Server %s connect Success(%d)", ipaddr_str.toLatin1().constData(), ui->SuccessCounter->intValue());
 #endif
@@ -176,6 +180,15 @@ void QLinkKeeper::readPingOutputData(int exitCode, QProcess::ExitStatus exitStat
         ui->labelFailure->setText(FAILURE_ACTIVE);
         int failureCount = ui->FailureCounter->intValue();
         ui->FailureCounter->display(failureCount+1);
+
+        m_LinkKeepStatus = LINK_FAILURE;
+        m_SysTrayIcon->setToolTip("QLinkKeeper(Failure)");
+
+        if (true == isHidden()){
+            QString titlec("QLinkKeeper");
+            QString textc = "Link Failure(" + QString::number(failureCount) + ")";
+            m_SysTrayIcon->showMessage(titlec,textc,QSystemTrayIcon::Information);
+        }
 
 #ifdef DEBUG_LOGOUT_ON
         qDebug("Server %s connect Failure(%d)", ipaddr_str.toLatin1().constData(), ui->FailureCounter->intValue());

@@ -11,6 +11,7 @@
 #include <QTcpSocket>
 #include <QProcess>
 #include <QSystemTrayIcon>
+#include <QTextCodec>
 #include "qipedit.h"
 
 namespace Ui {
