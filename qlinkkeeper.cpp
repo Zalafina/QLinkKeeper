@@ -16,7 +16,8 @@ QLinkKeeper::QLinkKeeper(QWidget *parent) :
     m_LinkKeepStatus(LINK_IDLE),
     m_LinkKeeping(false),
     m_LinkTimer(this),
-    m_PingProcess(NULL)
+    m_PingProcess(NULL),
+    m_SysTrayIcon(NULL)
 {
     ui->setupUi(this);
 
@@ -31,7 +32,14 @@ QLinkKeeper::QLinkKeeper(QWidget *parent) :
     m_PingProcess = new QProcess();
     m_PingProcess->setProcessChannelMode(QProcess::MergedChannels);
     //static_cast<void>(QObject::connect(m_PingProcess,SIGNAL(readyReadStandardOutput()),this,SLOT(receivePingStandOutputData())));
-    static_cast<void>(QObject::connect(m_PingProcess,SIGNAL(finished(int, QProcess::ExitStatus)),this,SLOT(readPingOutputData(int, QProcess::ExitStatus))));
+    QObject::connect(m_PingProcess,SIGNAL(finished(int, QProcess::ExitStatus)),this,SLOT(readPingOutputData(int, QProcess::ExitStatus)));
+
+    m_SysTrayIcon = new QSystemTrayIcon(this);
+    m_SysTrayIcon->setIcon(QIcon(":/AppIcon.ico"));
+    m_SysTrayIcon->setToolTip("QLinkKeeper");
+    m_SysTrayIcon->show();
+
+    QObject::connect(m_SysTrayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this, SLOT(SystrayIconActivated(QSystemTrayIcon::ActivationReason)));
 }
 
 QLinkKeeper::~QLinkKeeper()
@@ -44,6 +52,28 @@ QLinkKeeper::~QLinkKeeper()
     m_PingProcess->terminate();
     delete m_PingProcess;
     m_PingProcess = NULL;
+
+    delete m_SysTrayIcon;
+    m_SysTrayIcon = NULL;
+}
+
+void QLinkKeeper::WindowStateChangedProc(void)
+{
+    if (true == isMinimized()){
+#ifdef DEBUG_LOGOUT_ON
+        qDebug("QLinkKeeper::WindowStateChangedProc() -> Window Minimized: setHidden!");
+#endif
+        hide();
+    }
+}
+
+void QLinkKeeper::changeEvent(QEvent *event)
+{
+    if(event->type()==QEvent::WindowStateChange)
+    {
+        QTimer::singleShot(0, this, SLOT(WindowStateChangedProc()));
+    }
+    QDialog::changeEvent(event);
 }
 
 void QLinkKeeper::on_linkButton_clicked()
@@ -150,6 +180,24 @@ void QLinkKeeper::readPingOutputData(int exitCode, QProcess::ExitStatus exitStat
 #ifdef DEBUG_LOGOUT_ON
         qDebug("Server %s connect Failure(%d)", ipaddr_str.toLatin1().constData(), ui->FailureCounter->intValue());
 #endif
+    }
+}
+
+void QLinkKeeper::SystrayIconActivated(QSystemTrayIcon::ActivationReason reason)
+{
+    if (QSystemTrayIcon::DoubleClick == reason){
+#ifdef DEBUG_LOGOUT_ON
+        qDebug() << "QLinkKeeper::SystrayIconActivated() -> SystemTray double clicked: showNormal()!!";
+#endif
+
+//        if (true == isHidden()){
+//            showNormal();
+//        }
+//        activateWindow();
+
+        showNormal();
+        activateWindow();
+        raise();
     }
 }
 

@@ -10,6 +10,7 @@
 #include <QSettings>
 #include <QTcpSocket>
 #include <QProcess>
+#include <QSystemTrayIcon>
 #include "qipedit.h"
 
 namespace Ui {
@@ -32,11 +33,17 @@ public:
     };
     Q_ENUM(LinkKeepStatus)
 
+    Q_INVOKABLE void WindowStateChangedProc(void);
+
+protected:
+    void changeEvent(QEvent *event);
+
 private slots:
     void on_linkButton_clicked();
 
     void linkCycleTimeOut(void);
     void readPingOutputData(int exitCode, QProcess::ExitStatus exitStatus);
+    void SystrayIconActivated(QSystemTrayIcon::ActivationReason reason);
 
 private:
     void saveIPAddr(void);
@@ -52,6 +59,7 @@ private:
     bool m_LinkKeeping;
     QTimer m_LinkTimer;
     QProcess *m_PingProcess;
+    QSystemTrayIcon *m_SysTrayIcon;
 };
 
 #endif // QLINKKEEPER_H
