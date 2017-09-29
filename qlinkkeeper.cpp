@@ -23,6 +23,9 @@ QLinkKeeper::QLinkKeeper(QWidget *parent) :
     ui->setupUi(this);
     //setFocusPolicy(Qt::StrongFocus);
 
+    ui->cycleTimeSpinBox->setInputMethodHints(Qt::ImhDigitsOnly);
+    ui->cycleTimeSpinBox->setAttribute(Qt::WA_InputMethodEnabled, false);
+
 //    w_IPAddr->number1->installEventFilter(this);
 //    w_IPAddr->number2->installEventFilter(this);
 //    w_IPAddr->number3->installEventFilter(this);

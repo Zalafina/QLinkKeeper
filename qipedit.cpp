@@ -40,6 +40,11 @@ QIPEdit::QIPEdit(QWidget *parent) :
     number3->setAttribute(Qt::WA_InputMethodEnabled, false);
     number4->setAttribute(Qt::WA_InputMethodEnabled, false);
 
+    number1->setInputMethodHints(Qt::ImhDigitsOnly);
+    number2->setInputMethodHints(Qt::ImhDigitsOnly);
+    number3->setInputMethodHints(Qt::ImhDigitsOnly);
+    number4->setInputMethodHints(Qt::ImhDigitsOnly);
+
     Qt::Alignment alignment = Qt::AlignHCenter|Qt::AlignVCenter;
     number1->setAlignment(alignment);
     number2->setAlignment(alignment);
