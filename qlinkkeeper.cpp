@@ -412,6 +412,7 @@ void QLinkKeeper::loadClearCountStatus(void)
         ClearCount = settingFile.value("ClearCount");
         if (true == ClearCount.canConvert<bool>() ){
             clearcountStatus = settingFile.value("ClearCount").toBool();
+            ui->clearCheckBox->setChecked(clearcountStatus);
             loadResult = true;
         }
         else{
