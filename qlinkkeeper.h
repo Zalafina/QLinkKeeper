@@ -12,6 +12,7 @@
 #include <QProcess>
 #include <QSystemTrayIcon>
 #include <QTextCodec>
+//#include <QKeyEvent>
 #include "qipedit.h"
 
 namespace Ui {
@@ -38,6 +39,8 @@ public:
 
 protected:
     void changeEvent(QEvent *event);
+    //void keyPressEvent(QKeyEvent *event) override;
+    //bool eventFilter(QObject *widgetobject, QEvent *event);
 
 private slots:
     void on_linkButton_clicked();
@@ -52,6 +55,9 @@ private:
 
     void saveLinkCycleTime(void);
     void loadLinkCycleTime(void);
+
+    void saveClearCountStatus(void);
+    void loadClearCountStatus(void);
 
 private:
     Ui::QLinkKeeper *ui;

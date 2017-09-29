@@ -21,12 +21,19 @@ QLinkKeeper::QLinkKeeper(QWidget *parent) :
     m_SysTrayIcon(NULL)
 {
     ui->setupUi(this);
+    //setFocusPolicy(Qt::StrongFocus);
+
+//    w_IPAddr->number1->installEventFilter(this);
+//    w_IPAddr->number2->installEventFilter(this);
+//    w_IPAddr->number3->installEventFilter(this);
+//    w_IPAddr->number4->installEventFilter(this);
 
     QHBoxLayout *hlayout = w_IPAddr->getHLayout();
     hlayout->setAlignment(Qt::AlignTop);
 
     loadIPAddr();
     loadLinkCycleTime();
+    loadClearCountStatus();
 
     QObject::connect(&m_LinkTimer, SIGNAL(timeout()), this, SLOT(linkCycleTimeOut()));
 
@@ -77,6 +84,90 @@ void QLinkKeeper::changeEvent(QEvent *event)
     QDialog::changeEvent(event);
 }
 
+//void QLinkKeeper::keyPressEvent(QKeyEvent *event)
+//{
+//    switch (event->key()) {
+//    case Qt::Key_Space:
+//        focusNextChild();
+//        break;
+//    default:
+//        break;
+//    }
+
+//    qDebug() << "Some key pressed:" << Qt::Key(event->key());
+
+//    QDialog::keyPressEvent(event);
+//}
+
+//bool QLinkKeeper::eventFilter(QObject *widgetobject, QEvent *event)
+//{
+//    if ((widgetobject == w_IPAddr->number1)
+//            || (widgetobject == w_IPAddr->number2)
+//            || (widgetobject == w_IPAddr->number3)
+//            || (widgetobject == w_IPAddr->number4)){
+//        if (event->type() == QEvent::KeyPress){
+//            int widgetindex_cur = 0;
+//            int widgetindex_next = 0;
+//            bool shiftmodifier  = false;
+//            QKeyEvent *keyevent = dynamic_cast<QKeyEvent *>(event);
+
+//            if (widgetobject == w_IPAddr->number1){
+//                widgetindex_cur = 1;
+//            }
+//            else if (widgetobject == w_IPAddr->number2){
+//                widgetindex_cur = 2;
+//            }
+//            else if (widgetobject == w_IPAddr->number3){
+//                widgetindex_cur = 3;
+//            }
+//            else {
+//                widgetindex_cur = 4;
+//            }
+
+//            switch (keyevent->key()) {
+//            case Qt::Key_Space:
+//                if (keyevent->modifiers() == (Qt::ShiftModifier)){
+//                    if (1 == widgetindex_cur){
+//                        widgetindex_next = 4;
+//                    }
+//                    else{
+//                        widgetindex_next = widgetindex_cur - 1;
+//                    }
+//                    shiftmodifier = true;
+//                }
+//                else{
+//                    if (4 == widgetindex_cur){
+//                        widgetindex_next = 1;
+//                    }
+//                    else{
+//                        widgetindex_next = widgetindex_cur + 1;
+//                    }
+//                }
+
+//                if (4 == widgetindex_next){
+//                    w_IPAddr->number4->setFocus(Qt::TabFocusReason);
+//                }
+//                else if (3 == widgetindex_next){
+//                    w_IPAddr->number3->setFocus(Qt::TabFocusReason);
+//                }
+//                else if (2 == widgetindex_next){
+//                    w_IPAddr->number2->setFocus(Qt::TabFocusReason);
+//                }
+//                else {
+//                    w_IPAddr->number1->setFocus(Qt::TabFocusReason);
+//                }
+//                break;
+//            default:
+//                break;
+//            }
+
+//            qDebug() << "KeyPressed->" << (Qt::Key)keyevent->key() << "with Qt::ShiftModifier("<<shiftmodifier<<")" << "on IP Number" << widgetindex_cur;
+//        }
+//    }
+
+//    return QDialog::eventFilter(widgetobject, event);
+//}
+
 void QLinkKeeper::on_linkButton_clicked()
 {
     if (false == m_LinkKeeping){
@@ -90,6 +181,7 @@ void QLinkKeeper::on_linkButton_clicked()
             ui->cycleTimeSpinBox->setReadOnly(true);
             saveIPAddr();
             saveLinkCycleTime();
+            saveClearCountStatus();
             ui->linkButton->setText("Stop");
             m_LinkTimer.stop();
             m_LinkTimer.start(ui->cycleTimeSpinBox->value()*1000);
@@ -148,10 +240,10 @@ void QLinkKeeper::readPingOutputData(int exitCode, QProcess::ExitStatus exitStat
         QString codecResult = pingCodeC->toUnicode(data);
         QStringList pingoutput = codecResult.split("\r\n");
 
-//        QTextStream cout(stdout, QIODevice::WriteOnly);
-//        for(qint32 loopCnt = 0; loopCnt < pingoutput.size(); loopCnt++){
-//            cout << pingoutput.at(loopCnt) << endl; cout.flush();
-//        }
+        //        QTextStream cout(stdout, QIODevice::WriteOnly);
+        //        for(qint32 loopCnt = 0; loopCnt < pingoutput.size(); loopCnt++){
+        //            cout << pingoutput.at(loopCnt) << endl; cout.flush();
+        //        }
 
         for(qint32 loopCnt = 0; loopCnt < pingoutput.size(); loopCnt++){
             qDebug().noquote() << pingoutput.at(loopCnt);
@@ -207,11 +299,6 @@ void QLinkKeeper::SystrayIconActivated(QSystemTrayIcon::ActivationReason reason)
         qDebug() << "QLinkKeeper::SystrayIconActivated() -> SystemTray double clicked: showNormal()!!";
 #endif
 
-//        if (true == isHidden()){
-//            showNormal();
-//        }
-//        activateWindow();
-
         showNormal();
         activateWindow();
         raise();
@@ -257,7 +344,7 @@ void QLinkKeeper::loadIPAddr(void)
         qDebug("Load IP Address (%s)", ipaddr.toString().toLatin1().constData());
     }
     else{
-        qDebug("Load IP Address Failure: containsFlag(%d)", containsFlag);
+        qDebug("Load IP Address Failure: containsFlag(%s)", QVariant::fromValue(containsFlag).toString().toLatin1().constData());
     }
 #endif
 }
@@ -279,7 +366,7 @@ void QLinkKeeper::loadLinkCycleTime(void)
     QSettings settingFile(QString("settings.ini"), QSettings::IniFormat);
     bool loadResult = false;
     bool containsFlag = settingFile.contains("LinkCycleTime");
-    int cycletime = 0;
+    int cycletime = -1;
 
     if (true == containsFlag){
         cycletime = settingFile.value("LinkCycleTime").toInt();
@@ -295,7 +382,52 @@ void QLinkKeeper::loadLinkCycleTime(void)
         qDebug("Load LinkCycleTime (%d) Seconds", cycletime);
     }
     else{
-        qDebug("Load LinkCycleTime Failure: containsFlag(%d), cycletime(%d)", containsFlag, cycletime);
+        qDebug("Load LinkCycleTime Failure: containsFlag(%s), cycletime(%d)", QVariant::fromValue(containsFlag).toString().toLatin1().constData(), cycletime);
+    }
+#endif
+}
+
+void QLinkKeeper::saveClearCountStatus(void)
+{
+    QSettings settingFile(QString("settings.ini"), QSettings::IniFormat);
+
+    bool clearcountStatus = ui->clearCheckBox->isChecked();
+    settingFile.setValue(QLatin1String("ClearCount"), clearcountStatus);
+
+#ifdef DEBUG_LOGOUT_ON
+    QVariant ClearCount = ui->clearCheckBox->isChecked();
+    qDebug("Save ClearCount (%s)", ClearCount.toString().toLatin1().constData());
+#endif
+}
+
+void QLinkKeeper::loadClearCountStatus(void)
+{
+    QSettings settingFile(QString("settings.ini"), QSettings::IniFormat);
+    bool loadResult = false;
+    bool containsFlag = settingFile.contains("ClearCount");
+    bool clearcountStatus = true;
+    QVariant ClearCount;
+
+    if (true == containsFlag){
+        ClearCount = settingFile.value("ClearCount");
+        if (true == ClearCount.canConvert<bool>() ){
+            clearcountStatus = settingFile.value("ClearCount").toBool();
+            loadResult = true;
+        }
+        else{
+            // do nothing.
+        }
+    }
+    else{
+        // do nothing.
+    }
+
+#ifdef DEBUG_LOGOUT_ON
+    if (true == loadResult){
+        qDebug("Load ClearCount (%s)", ClearCount.toString().toLatin1().constData());
+    }
+    else{
+        qDebug("Load ClearCount Failure: containsFlag(%s), canConvert(%s)", QVariant::fromValue(containsFlag).toString().toLatin1().constData(), QVariant::fromValue(ClearCount.canConvert<bool>()).toString().toLatin1().constData());
     }
 #endif
 }

@@ -7,6 +7,7 @@
 #include <QHBoxLayout>
 #include <QHostAddress>
 #include <QIntValidator>
+#include <QKeyEvent>
 
 class QIPEdit : public QWidget
 {
@@ -24,6 +25,9 @@ public:
     void textClear(void);
     void setReadOnly(bool r);
     QHBoxLayout *getHLayout(void);
+
+protected:
+    bool eventFilter(QObject *widgetobject, QEvent *event);
 
 signals:
 

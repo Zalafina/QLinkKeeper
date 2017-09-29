@@ -60,6 +60,11 @@ QIPEdit::QIPEdit(QWidget *parent) :
     mainLayout->addWidget(number4);
 
     parent->setLayout(mainLayout);
+
+    number1->installEventFilter(this);
+    number2->installEventFilter(this);
+    number3->installEventFilter(this);
+    number4->installEventFilter(this);
 }
 
 QIPEdit::~QIPEdit()
@@ -195,4 +200,77 @@ void QIPEdit::setReadOnly(bool r)
 QHBoxLayout *QIPEdit::getHLayout(void)
 {
     return mainLayout;
+}
+
+bool QIPEdit::eventFilter(QObject *widgetobject, QEvent *event)
+{
+    if ((widgetobject == number1)
+            || (widgetobject == number2)
+            || (widgetobject == number3)
+            || (widgetobject == number4)){
+        if (event->type() == QEvent::KeyPress){
+            int widgetindex_cur = 0;
+            int widgetindex_next = 0;
+            bool shiftmodifier  = false;
+            QKeyEvent *keyevent = dynamic_cast<QKeyEvent *>(event);
+
+            if (widgetobject == number1){
+                widgetindex_cur = 1;
+            }
+            else if (widgetobject == number2){
+                widgetindex_cur = 2;
+            }
+            else if (widgetobject == number3){
+                widgetindex_cur = 3;
+            }
+            else {
+                widgetindex_cur = 4;
+            }
+
+            switch (keyevent->key()) {
+            case Qt::Key_Space:
+                if (keyevent->modifiers() == (Qt::ShiftModifier)){
+                    if (1 == widgetindex_cur){
+                        widgetindex_next = 4;
+                    }
+                    else{
+                        widgetindex_next = widgetindex_cur - 1;
+                    }
+                    shiftmodifier = true;
+                }
+                else{
+                    if (4 == widgetindex_cur){
+                        widgetindex_next = 1;
+                    }
+                    else{
+                        widgetindex_next = widgetindex_cur + 1;
+                    }
+                }
+
+                if (4 == widgetindex_next){
+                    number4->setFocus(Qt::TabFocusReason);
+                }
+                else if (3 == widgetindex_next){
+                    number3->setFocus(Qt::TabFocusReason);
+                }
+                else if (2 == widgetindex_next){
+                    number2->setFocus(Qt::TabFocusReason);
+                }
+                else {
+                    number1->setFocus(Qt::TabFocusReason);
+                }
+                break;
+            default:
+                break;
+            }
+
+#ifdef DEBUG_LOGOUT_ON
+            if (widgetindex_next != 0){
+                qDebug().nospace() << "[QIPEdit]" << " KeyPressed " << (Qt::Key)keyevent->key() << " with Qt::ShiftModifier("<<shiftmodifier<<") " << "on IP Number " << widgetindex_cur << ", Focus change to IP Number " << widgetindex_next;
+            }
+#endif
+        }
+    }
+
+    return QWidget::eventFilter(widgetobject, event);
 }
