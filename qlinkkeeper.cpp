@@ -48,7 +48,7 @@ QLinkKeeper::QLinkKeeper(QWidget *parent) :
 
     m_SysTrayIcon = new QSystemTrayIcon(this);
     m_SysTrayIcon->setIcon(QIcon(":/AppIcon.ico"));
-    m_SysTrayIcon->setToolTip("QLinkKeeper(idle)");
+    m_SysTrayIcon->setToolTip("QLinkKeeper(Idle)");
     m_SysTrayIcon->show();
 
     QObject::connect(m_SysTrayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this, SLOT(SystrayIconActivated(QSystemTrayIcon::ActivationReason)));
