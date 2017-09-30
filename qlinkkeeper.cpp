@@ -274,7 +274,7 @@ void QLinkKeeper::readPingOutputData(int exitCode, QProcess::ExitStatus exitStat
         ui->SuccessCounter->display(successCount);
 
         m_LinkKeepStatus = LINK_SUCCESS;
-        m_SysTrayIcon->setToolTip("QLinkKeeper(Success)");
+        m_SysTrayIcon->setToolTip("QLinkKeeper(Success:" + QString::number(successCount) + ")");
 
 #ifdef DEBUG_LOGOUT_ON
         qDebug("Server %s connect Success(%d)", ipaddr_str.toLatin1().constData(), ui->SuccessCounter->intValue());
@@ -290,7 +290,7 @@ void QLinkKeeper::readPingOutputData(int exitCode, QProcess::ExitStatus exitStat
         ui->FailureCounter->display(failureCount);
 
         m_LinkKeepStatus = LINK_FAILURE;
-        m_SysTrayIcon->setToolTip("QLinkKeeper(Failure)");
+        m_SysTrayIcon->setToolTip("QLinkKeeper(Failure:" + QString::number(failureCount) + ")");
 
         if (true == isHidden()){
             QString titlec("QLinkKeeper");
