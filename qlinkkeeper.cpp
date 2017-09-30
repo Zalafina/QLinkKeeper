@@ -9,6 +9,7 @@ static const QString SUCCESS_INACTIVE(QString("<html><head/><body><p><span style
 static const QString FAILURE_INACTIVE(QString("<html><head/><body><p><span style=\" color:#737373;\">Failure</span></p></body></html>"));
 
 static const uint PING_CMD_TIMEOUT = 10000U;
+static const int LCDNUMBER_MAX = 999999;
 
 QLinkKeeper::QLinkKeeper(QWidget *parent) :
     QDialog(parent),
@@ -265,8 +266,12 @@ void QLinkKeeper::readPingOutputData(int exitCode, QProcess::ExitStatus exitStat
     if (true == pingresult)
     {
         ui->labelSuccess->setText(SUCCESS_ACTIVE);
-        int successCount = ui->SuccessCounter->intValue();
-        ui->SuccessCounter->display(successCount+1);
+
+        int successCount = ui->SuccessCounter->intValue() + 1;
+        if ( successCount > LCDNUMBER_MAX ){
+            successCount = LCDNUMBER_MAX;
+        }
+        ui->SuccessCounter->display(successCount);
 
         m_LinkKeepStatus = LINK_SUCCESS;
         m_SysTrayIcon->setToolTip("QLinkKeeper(Success)");
@@ -277,8 +282,12 @@ void QLinkKeeper::readPingOutputData(int exitCode, QProcess::ExitStatus exitStat
     }
     else{
         ui->labelFailure->setText(FAILURE_ACTIVE);
-        int failureCount = ui->FailureCounter->intValue();
-        ui->FailureCounter->display(failureCount+1);
+
+        int failureCount = ui->FailureCounter->intValue() + 1;
+        if ( failureCount > LCDNUMBER_MAX ){
+            failureCount = LCDNUMBER_MAX;
+        }
+        ui->FailureCounter->display(failureCount);
 
         m_LinkKeepStatus = LINK_FAILURE;
         m_SysTrayIcon->setToolTip("QLinkKeeper(Failure)");
