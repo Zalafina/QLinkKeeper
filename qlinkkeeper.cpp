@@ -192,6 +192,7 @@ void QLinkKeeper::on_linkButton_clicked()
             //linkCycleTimeOut();
 
             m_LinkKeeping = true;
+            hide();
         }
         else{
             QMessageBox::warning(this, tr("QLinkKeeper"), tr("无效的IP地址"));
@@ -314,6 +315,7 @@ void QLinkKeeper::SystrayIconActivated(QSystemTrayIcon::ActivationReason reason)
         showNormal();
         activateWindow();
         raise();
+        QApplication::setActiveWindow(this);
     }
 }
 
